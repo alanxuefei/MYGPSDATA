@@ -19,6 +19,15 @@
         <provider android:name="GPSDbProvider"
                     android:authorities="com.example.zhu.mygpsdata">
         </provider>
-    </application>
+        <service
+            android:name=".GPSLocationService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
 
+
+    </application>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET"/>
 </manifest>

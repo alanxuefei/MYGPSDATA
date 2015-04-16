@@ -3,9 +3,7 @@ package com.example.zhu.mygpsdata;
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.net.Uri;
-import android.util.Log;
 
 /**
  * Created by Zhu on 12/04/2015.
@@ -31,7 +29,7 @@ public class GPSDbProvider extends ContentProvider {
                 null // sort order
         );
 
-        Log.v("Cursor Object", DatabaseUtils.dumpCursorToString(cursor));
+
         return cursor;
     }
 

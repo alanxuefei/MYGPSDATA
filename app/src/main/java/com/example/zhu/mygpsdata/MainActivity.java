@@ -1,29 +1,36 @@
 package com.example.zhu.mygpsdata;
 
-import android.content.ContentValues;
-import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+import android.database.DatabaseUtils;
+import android.location.Criteria;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import android.widget.Button;
 
 
 public class MainActivity extends ActionBarActivity {
 
+    static private  int lock=1;
+
     static final String TEST_LOCATION = "99705";
     static final long TEST_DATE = 1419033600L;  // December 20th, 2014
+    private String provider;
+    private LocationManager locationManager;
+    private Criteria criteria;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
     }
 
 
@@ -36,9 +43,27 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void selfDestruct(View view) {
+
+
         // Kabloey
         Log.e("create","insert");
-        insertNorthPoleLocationValues(getApplicationContext());
+        Button p1_button = (Button)findViewById(R.id.button);
+        Intent Myservice_intent = new Intent(getApplicationContext(), GPSLocationService.class);
+        if (lock == 0) {
+
+            // Update the widgets via the service
+            getApplicationContext().startService(Myservice_intent);
+            lock = 1;
+            p1_button.setText("Stop GPS data");
+        }
+        else{
+            getApplicationContext().stopService(Myservice_intent);
+            lock = 0;
+            p1_button.setText("Star GPS data");
+
+        }
+
+        //insertNorthPoleLocationValues(getApplicationContext());
 
     }
 
@@ -52,6 +77,7 @@ public class MainActivity extends ActionBarActivity {
                 new String[]{"test"},
                 null);
         Log.e("create","read");
+        Log.v("Cursor Object", DatabaseUtils.dumpCursorToString(locationCursor));
         //insertNorthPoleLocationValues(getApplicationContext());
 
     }
@@ -71,49 +97,6 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    /*
-    Students: You can uncomment this function once you have finished creating the
-    LocationEntry part of theGPSContract as well as theGPSDbHelper.
- */
-    static long insertNorthPoleLocationValues(Context context) {
-        // insert our test records into the database
-       GPSDbHelper dbHelper = new GPSDbHelper(context);
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        ContentValues testValues =  createNorthPoleLocationValues();
-
-        long locationRowId;
-        locationRowId = db.insert(GPSDbContract.LocationEntry.TABLE_NAME, null, testValues);
-        String tmpStr10;
-        tmpStr10 = Long.toString(locationRowId);
-        Log.e("create",tmpStr10);
-        // Verify we got a row back.
-       // assertTrue("Error: Failure to insert North Pole Location Values", locationRowId != -1);
 
 
-
-       // cursor.close();
-        db.close();
-        return locationRowId;
-    }
-    /*
-    Students: You can uncomment this helper function once you have finished creating the
-    LocationEntry part of theGPSContract.
- */
-    static ContentValues createNorthPoleLocationValues() {
-        // Create a new map of values, where column names are the keys
-        ContentValues testValues = new ContentValues();
-
-        testValues.put(GPSDbContract.LocationEntry.COLUMN_LOCATION_SETTING, TEST_LOCATION);
-        testValues.put(GPSDbContract.LocationEntry.COLUMN_DATETIME, getDateTime());
-        testValues.put(GPSDbContract.LocationEntry.COLUMN_COORD_LAT, 64.7488);
-        testValues.put(GPSDbContract.LocationEntry.COLUMN_COORD_LONG, -147.353);
-
-        return testValues;
-    }
-    private static String getDateTime() {
-        Calendar c = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd:MMMM:yyyy HH:mm:ss a");
-        String strDate = sdf.format(c.getTime());
-        return strDate;
-    }
 }
